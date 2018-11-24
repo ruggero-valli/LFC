@@ -1,4 +1,4 @@
-0    1    0.01    100     2       1
+0    1    0.01    100     3       1
 x0   v0   dt      tmax    method  w2
 
 method:

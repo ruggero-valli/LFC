@@ -5,9 +5,8 @@
 
 double simple_oscill_energy(double x, double v, double w2);
 
-int main(int argc, char* argv[]) {
+int main(){
     // Read parameters from input file
-    //puts("hi");
     FILE *input = fopen("input/input_errore.dat", "r");
     FILE *output = fopen("data/energia_errore_vs_dt.dat", "w");
     double x0, v0, dt, tmax;
@@ -30,12 +29,10 @@ int main(int argc, char* argv[]) {
     t_state end;
     double E0 = simple_oscill_energy(x0, v0, params[1]);
     double E;
-    for (; dt > 0.0001; dt/=1.1) {
-			//puts("hi");
-        end = simulate(x0, v0, dt, tmax+dt, params, method);
-        //puts("hih");
+    for (; dt > 0.0001; dt/=1.2) {
+        end = simulate(x0, v0, dt, tmax, params, method);
         E = simple_oscill_energy(end.x, end.v, params[1]);
-        fprintf(output, "%.12lf %.12lf\n", fabs(E-E0)/E0, dt);
+        fprintf(output, "%lf %lf\n", fabs(E-E0)/E0, dt);
     }
     return 0;
 }
