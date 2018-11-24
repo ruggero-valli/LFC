@@ -1,12 +1,8 @@
-1.5707963267948966       0       0.001   100     3      1       1       0.5     1.47    9.4247779607693793
-x0                       v0      dt      tmax    method phicode w2      gamma   a0      TF
+0    1    0.01    100     2       1
+x0   v0   dt      tmax    method  w2
 
 method:
     0 - eulero
     1 - eulero-cromer
     2 - RK2
     3 - RK4
-
-phicode:
-    0 - oscillatore armonico
-    1 - pendolo
