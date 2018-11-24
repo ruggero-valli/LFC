@@ -24,7 +24,7 @@ double phi(double x, double v, double t, double params[]){
     switch(phicode){
         case 0:
             w2 = params[1];
-            return -w2*state.x;
+            return -w2*x;
             break;
         case 1:
             w2 = params[1];
@@ -43,7 +43,7 @@ double phi(double x, double v, double t, double params[]){
 t_state Eulero(t_state state, double dt, double params[]){
    t_state new_state;
    new_state.x = state.x + state.v*dt;
-   new_state.v = state.v + phi(state, params)*dt;
+   new_state.v = state.v + phi(state.x, state.v, state.t, params)*dt;
    new_state.t = state.t + dt;
    return new_state;
 }
@@ -51,7 +51,7 @@ t_state Eulero(t_state state, double dt, double params[]){
 // Integrate one step with Euler-Cromer method
 t_state Eulero_Cromer(t_state state, double dt, double params[]){
    t_state new_state;
-   new_state.v = state.v + phi(state, params)*dt;
+   new_state.v = state.v + phi(state.x, state.v, state.t, params)*dt;
    new_state.x = state.x + new_state.v*dt;
    new_state.t = state.t + dt;
    return new_state;
@@ -60,37 +60,49 @@ t_state Eulero_Cromer(t_state state, double dt, double params[]){
 // Integrate one step with Runge-Kutta method of second order
 t_state RK2(t_state state, double dt, double params[]){
    double x = state.x, v = state.v, t = state.t;
+   t_state new_state;
 
 
-   dx1 = v * dt;
-   dv1 = phi(x, v, t, params);
-   dx2 = v + dv1*(dt/2);
-   dv2 = phi(x+dx2/2, v+dv1/2, t, params) + dt; // ???
+   double dx1 = v * dt;
+   double dv1 = dt*phi(x, v, t, params);
+
+   double dx2 = dt*(v + dv1/2.0);
+   double dv2 = dt*phi(x+dx1/2.0, (v + dv1/2.0), (t+dt/2.0), params);
+
    new_state.x = state.x + dx2*dt;
    new_state.v = state.v + dv2*dt;
    new_state.t = state.t + dt;
    return new_state;
 }
 
+
 // Integrate one step with Runge-Kutta method of fourth order
 t_state RK4(t_state state, double dt, double params[]){
-   t_state new_state = state;
-   double k1[2], k2[2], k3[2], k4[2];
-   k1[0] = state.v;
-   k1[1] = phi(state, params);
-   new_state.v = k1[1] = phi(state, params);
-   k2[0] = state.v + k1[1]*dt/2;
-   new_state.x = k2[0]
-   k2[1] = phi(new_state, params);
-   k3[0] = state.v + k2[1]*dt/2;
-   k3[1] = phi(new_state, params); 
-   k4[0] = state.v + k3[1]*dt;
-   k4[1] = phi(state, params);
-   new_state.x = state.x + (k1[0]+2*k2[0]+ 2*k3[0]+k4[0])/6*dt;
-   new_state.v = state.v + (k1[1]+2*k2[1]+ 2*k3[1]+k4[1])/6*dt;
+	
+   double x = state.x, v = state.v, t = state.t;
+   t_state new_state;
+
+
+   double dx1 = v * dt;
+   double dv1 = dt*phi(x, v, t, params);
+
+   double dx2 = dt*(v + dv1/2.0);
+   double dv2 = dt*phi(x+dx1/2.0, (v + dv1/2.0), (t+dt/2.0), params);
+
+   double dx3 = dt*(v + dv2/2.0);
+   double dv3 = dt*phi(x+dx2/2.0, (v + dv2/2.0), (t+dt/2.0), params);
+
+   double dx4 = dt*(v + dv3);
+   double dv4 = dt*phi(x+dx3, (v + dv3), (t+dt), params);
+
+   new_state.x = state.x + ((dx1 + 2*dx2 + 2*dx3 + dx4)/6.0);
+   new_state.v = state.v + ((dv1 + 2*dv2 + 2*dv3 + dv4)/6.0);
    new_state.t = state.t + dt;
    return new_state;
+   
 }
+
+
 
 // Integrate the equation until tmax and return the final state
 t_state simulate(double x0, double v0, double dt, double tmax, double params[], int method){
