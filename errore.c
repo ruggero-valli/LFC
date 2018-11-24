@@ -32,7 +32,7 @@ int main(){
     for (; dt > 0.0001; dt/=1.2) {
         end = simulate(x0, v0, dt, tmax, params, method);
         E = simple_oscill_energy(end.x, end.v, params[1]);
-        fprintf(output, "%.14lf %.14lf\n", fabs(E-E0)/E0, dt);
+        fprintf(output, "%.20lf %.20lf\n", fabs(E-E0)/E0, dt);
     }
     return 0;
 }
