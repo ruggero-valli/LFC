@@ -1,0 +1,8 @@
+0    1    0.01    100     3       1
+x0   v0   dt      tmax    method  w2
+
+method:
+    0 - eulero
+    1 - eulero-cromer
+    2 - RK2
+    3 - RK4
