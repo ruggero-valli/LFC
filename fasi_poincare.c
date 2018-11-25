@@ -6,13 +6,15 @@
 
 int main(){
     // Read parameters from input file
-    FILE *input = fopen("input/input.dat", "r");
+    FILE *input = fopen("input/input_fasi.dat", "r");
     double x0, v0, dt, tmax;
     int method;
     double params[5];
+    double TF;
     fscanf(input, "%lf %lf %lf %lf", &x0, &v0, &dt, &tmax);
     fscanf(input, "%d", &method);
-    fscanf(input, "%lf %lf %lf %lf %lf", &params[0], &params[1], &params[2], &params[3], &params[4]);
+    fscanf(input, "%lf %lf %lf %lf %lf", &params[0], &params[1], &params[2], &params[3], &TF);
+    params[4] = 2*M_PI/TF;
     /* PARAMS:
      * params[0] = phicode
      * params[1] = w2
@@ -47,13 +49,22 @@ int main(){
     state.x = x0;
     state.v = v0;
     state.t = 0;
-    FILE *output = fopen("data/simulazione.dat", "w");
-    while(state.t < tmax){
+    double alpha;
+    FILE *fasi = fopen("data/spazio_fasi.dat", "w");
+    FILE *poincare = fopen("data/poincare.dat", "w");
+    while(state.t < tmax*100){ // Keep integrating 100 times more, to have decent poincare section
         state = integrate(state, dt, params);
-        if (state.t > 0.2*tmax)
-        fprintf(output, "%lf %lf %lf\n", state.t, state.x, state.v);
+        // wrap angle between -pi and pi
+        alpha = mod(state.x+M_PI, 2*M_PI)-M_PI;
+        if (state.t < tmax){    // save phasespace only until tmax
+            fprintf(fasi, "%lf %lf\n", alpha, state.v);
+        }
+        if (fmod(state.t, TF)<dt){
+            fprintf(poincare, "%lf %lf\n", alpha, state.v);
+        }
     }
-    fclose(output);
+    fclose(fasi);
+    fclose(poincare);
 
     return 0;
 }

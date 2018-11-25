@@ -16,6 +16,7 @@ t_state RK2(t_state state, double dt, double params[]);
 t_state RK4(t_state state, double dt, double params[]);
 t_state simulate(double x0, double v0, double dt, double tmax, double params[], int method);
 double linear_interpolation(double x1, double x2, double y1, double y2);
+double fmod(double value, double modulus);
 
 // Calculate the acceleration given the parameters and the state of the system
 double phi(double x, double v, double t, double params[]){
@@ -34,7 +35,7 @@ double phi(double x, double v, double t, double params[]){
             return -w2*sin(x) -gamma*v + a0*cos(WF*t);
             break;
         default:
-            printf("Errore: phicode %d non riconosciuto\n", phicode);
+            fprintf(stderr, "Errore: phicode %d non riconosciuto\n", phicode);
             exit(2);
     }
 }
@@ -78,7 +79,7 @@ t_state RK2(t_state state, double dt, double params[]){
 
 // Integrate one step with Runge-Kutta method of fourth order
 t_state RK4(t_state state, double dt, double params[]){
-	
+
    double x = state.x, v = state.v, t = state.t;
    t_state new_state;
 
@@ -99,7 +100,7 @@ t_state RK4(t_state state, double dt, double params[]){
    new_state.v = state.v + ((dv1 + 2*dv2 + 2*dv3 + dv4)/6.0);
    new_state.t = state.t + dt;
    return new_state;
-   
+
 }
 
 
@@ -121,7 +122,7 @@ t_state simulate(double x0, double v0, double dt, double tmax, double params[], 
             integrate = RK4;
             break;
         default:
-            printf("Errore: metodo %d non riconosciuto\n", method);
+            fprintf(stderr, "Errore: metodo %d non riconosciuto\n", method);
             exit(1);
     }
     t_state state;
@@ -140,4 +141,8 @@ t_state simulate(double x0, double v0, double dt, double tmax, double params[], 
 // passing for (x1, y1) and (x2, y2)
 double linear_interpolation(double x1, double x2, double y1, double y2){
     return x1 - y1*(x1-x2)/(y1-y2);
+}
+
+double mod(double x, double N){
+    return fmod(fmod(x,N)+N, N);
 }
