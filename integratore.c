@@ -48,12 +48,13 @@ int main(){
     state.v = v0;
     state.t = 0;
     FILE *output = fopen("data/simulazione.dat", "w");
+    FILE *fasi = fopen("data/spazio_fasi_poincare.dat", "w");
     while(state.t < tmax){
         state = integrate(state, dt, params);
-        if (state.t > 0.2*tmax)
         fprintf(output, "%lf %lf %lf\n", state.t, state.x, state.v);
     }
     fclose(output);
+    fclose(fasi);
 
     return 0;
 }

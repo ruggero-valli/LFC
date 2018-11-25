@@ -50,7 +50,7 @@ int main(){
     state.v = v0;
     state.t = 0;
     double alpha;
-    FILE *fasi = fopen("data/spazio_fasi.dat", "w");
+    FILE *fasi = fopen("data/spazio_fasi_poincare.dat", "w");
     FILE *poincare = fopen("data/poincare.dat", "w");
     while(state.t < tmax*100){ // Keep integrating 100 times more, to have decent poincare section
         state = integrate(state, dt, params);

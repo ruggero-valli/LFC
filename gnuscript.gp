@@ -14,7 +14,17 @@ set output "plots/spazio_fasi.png"
 set xlabel "x"
 set ylabel "v"
 set grid
-plot "data/spazio_fasi.dat" u 1:2 w d notitle, "data/poincare.dat" pt 7 ps 0.5 notitle
+plot "data/simulazione.dat" u 2:3 w l notitle
+reset
+
+set terminal png size 800,600 enhanced
+set title "Sezioni di Poincare"
+set output "plots/poincare.png"
+set xlabel "x"
+set ylabel "v"
+set grid
+plot "data/spazio_fasi_poincare.dat" w d notitle, "data/poincare.dat" pt 7 ps 0.5 notitle
+reset
 
 set terminal png size 800,600 enhanced
 set title "Errore nell'oscillatore armonico"
