@@ -4,3 +4,4 @@ rm funzioni.h.gch
 ./integratore
 ./errore
 gnuplot gnuscript.gp
+rm integratore errore
