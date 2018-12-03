@@ -9,6 +9,10 @@ int main(){
     // Read parameters from input file
     FILE *input = fopen("input/input_errore.dat", "r");
     FILE *output = fopen("data/energia_errore_vs_dt.dat", "w");
+    if (input == NULL || output == NULL){
+      fprintf(stderr, "Missing directory: Please create ./data/ ./input/ and ./plots/ before running.");
+      exit(0);
+    }
     double x0, v0, dt0, dt1, tmax;
     int method;
     double params[5] = {0,0,0,0,0};

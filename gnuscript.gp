@@ -37,3 +37,13 @@ set format x "10^{%L}"
 set grid
 plot "data/energia_errore_vs_dt.dat" u 2:1 notitle, x, x**2, x**3, x**4, x**5
 reset
+
+
+set terminal png size 800,600 enhanced
+set title "Diagrammi di biforcazione"
+set output "plots/biforcazione.png"
+set xlabel "a0 (ampiezza forzante)"
+set ylabel "v finale"
+set grid
+plot "data/biforcazione.dat" u 1:2 notitle
+reset

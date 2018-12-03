@@ -6,8 +6,8 @@
 
 int main(){
     // Read parameters from input file
-    FILE *input = fopen("input/input.dat", "r");
-    FILE *output = fopen("data/simulazione.dat", "w");
+    FILE *input = fopen("input/input_biforcazione.dat", "r");
+    FILE *output = fopen("data/biforcazione.dat", "w");
     if (input == NULL || output==NULL){
       fprintf(stderr, "Missing directory: Please create ./data/ ./input/ and ./plots/ before running.");
       exit(0);
@@ -15,9 +15,14 @@ int main(){
     double x0, v0, dt, tmax;
     int method;
     double params[5];
+    double TF;
+    double a0, a1, da; // ampiezza della forzante, iniziale, finale e intervallo
     fscanf(input, "%lf %lf %lf %lf", &x0, &v0, &dt, &tmax);
     fscanf(input, "%d", &method);
-    fscanf(input, "%lf %lf %lf %lf %lf", &params[0], &params[1], &params[2], &params[3], &params[4]);
+    fscanf(input, "%lf %lf", &params[1], &params[2]);
+    fscanf(input, "%lf %lf %lf %lf", &a0, &a1, &da, &TF);
+    params[0]=1;  // Effetto presente solo per il pendolo smorzato
+    params[4] = 2*M_PI/TF; // Converto il periodo in pulsazione
     /* PARAMS:
      * params[0] = phicode
      * params[1] = w2
@@ -49,14 +54,17 @@ int main(){
 
 
     t_state state;
-    state.x = x0;
-    state.v = v0;
-    state.t = 0;
-    while(state.t < tmax){
+    double a;
+    for (a=a0; a<a1; a+=da){
+      state.x = x0;
+      state.v = v0;
+      state.t = 0;
+      params[3]=a;
+      while(state.t < tmax){
         state = integrate(state, dt, params);
-        fprintf(output, "%lf %lf %lf\n", state.t, state.x, state.v);
     }
-    fclose(output);
-
-    return 0;
+    fprintf(output, "%lf %lf\n", a, state.v);
+    }
+  fclose(output);
+  return 0;
 }

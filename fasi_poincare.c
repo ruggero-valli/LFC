@@ -7,6 +7,12 @@
 int main(){
     // Read parameters from input file
     FILE *input = fopen("input/input_fasi.dat", "r");
+    FILE *fasi = fopen("data/spazio_fasi_poincare.dat", "w");
+    FILE *poincare = fopen("data/poincare.dat", "w");
+    if (input == NULL || fasi == NULL || poincare == NULL){
+      fprintf(stderr, "Missing directory: Please create ./data/ ./input/ and ./plots/ before running.");
+      exit(0);
+    }
     double x0, v0, dt, tmax;
     int method;
     double params[5];
@@ -50,8 +56,6 @@ int main(){
     state.v = v0;
     state.t = 0;
     double alpha;
-    FILE *fasi = fopen("data/spazio_fasi_poincare.dat", "w");
-    FILE *poincare = fopen("data/poincare.dat", "w");
     while(state.t < tmax*100){ // Keep integrating 100 times more, to have decent poincare section
         state = integrate(state, dt, params);
         // wrap angle between -pi and pi
