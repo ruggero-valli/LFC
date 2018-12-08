@@ -99,7 +99,7 @@ int si_blocca(int visited[SIZE][SIZE], int n_passi) {
 		//printf("%d %d\n", pos.x, pos.y);
 		visited[pos.y][pos.x] = 1;
 		new_pos = advance(pos, visited);
-		if (pos.x < 2 || pos.y < 2 || -pos.x > SIZE-2 || -pos.y > SIZE-2) {
+		if (pos.x < 2 || pos.y < 2 || pos.x > SIZE-2 || pos.y > SIZE-2) {
 			return 0; // se arriva così lontano lo considero libero
 			// L'approsimazione è piccola data la lentezza con cui
 			// la random walk si allontana da dove è partita.
