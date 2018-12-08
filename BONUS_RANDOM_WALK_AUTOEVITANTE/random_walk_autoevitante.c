@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <time.h>
 
-#define SIZE 320
+#define SIZE 500
 #define N_SIMULAZIONI 15000
 #define MAX_PASSI 300
 
@@ -18,7 +18,7 @@ int all_full_near(t_pos start_pos, int visited[SIZE][SIZE]); // 0 o 1
 t_pos random_move(t_pos start_pos);
 double r01();
 int si_blocca(int visited[SIZE][SIZE], int n_passi); // 0 o 1
-void azzera(int visited[SIZE][SIZE]);
+void azzera(int visited[SIZE][SIZE], int distanza);
 
 int main() {
 	// TEST
@@ -59,13 +59,12 @@ int main() {
 	int visited[SIZE][SIZE] = {0};
 	
 	
-	// fare attenzione ai bordi della matrice
 	int n_passi, i, blocchi;
 	for(n_passi = 0; n_passi < MAX_PASSI; n_passi++) {
 	  blocchi = 0;
 	  for( i=0; i < N_SIMULAZIONI; i++) {
 	    blocchi += si_blocca(visited, n_passi);
-	    azzera(visited);
+	    azzera(visited, n_passi);
 	  }
 	  printf("%d %lf\n", n_passi, blocchi / (double) N_SIMULAZIONI);
 	}
@@ -93,14 +92,17 @@ t_pos advance(t_pos start_pos, int visited[SIZE][SIZE] ) {
 }
 
 int si_blocca(int visited[SIZE][SIZE], int n_passi) {
-	t_pos pos = {0,0};
+	t_pos pos = {SIZE/2,SIZE/2};
 	t_pos new_pos;
 	int i;
 	for (i=0; i < n_passi; i++) {
+		//printf("%d %d\n", pos.x, pos.y);
 		visited[pos.y][pos.x] = 1;
 		new_pos = advance(pos, visited);
-		if (pos.x > SIZE-2 || pos.y > SIZE-2 || -pos.x > SIZE-2 || -pos.y > SIZE-2) {
+		if (pos.x < 2 || pos.y < 2 || -pos.x > SIZE-2 || -pos.y > SIZE-2) {
 			return 0; // se arriva così lontano lo considero libero
+			// L'approsimazione è piccola data la lentezza con cui
+			// la random walk si allontana da dove è partita.
 		}
 		// new_pos == pos
 		if (new_pos.x == pos.x && new_pos.y == pos.y  ) {
@@ -113,10 +115,14 @@ int si_blocca(int visited[SIZE][SIZE], int n_passi) {
 		
 }
 
-void azzera(int visited[SIZE][SIZE]) {
+// azzero fino a alla distanza a cui può
+// essere arrivato al massimo cioè n_passi = distanza
+// Ottimizzazione: non serve azzerare i punti che devono
+// essere rimasti zero.
+void azzera(int visited[SIZE][SIZE], int distanza) {
 	int i,j;
-	for (i=0; i < SIZE; i++) {
-		for (j=0; j < SIZE; j++) {
+	for (i=SIZE/2 - distanza/2-1; i < SIZE/2 + distanza/2+1; i++) {
+		for (j=SIZE/2 - distanza/2-1; j < SIZE/2 + distanza/2+1; j++) {
 			visited[i][j] = 0;
 		}
 	}
