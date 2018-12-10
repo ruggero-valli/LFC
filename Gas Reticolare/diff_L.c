@@ -6,24 +6,24 @@ int main(int argv, char *argc[]){
     if (argv != 4){
         fprintf(stderr, "Error: 3 arguments expected\n"),
         printf("Usage:\n");
-        printf("%s: <size> <sim number> <max steps>\n", argc[0]);
+        printf("%s: <ro> <sim number> <max steps>\n", argc[0]);
         exit(1);
     }
-    int L = atoi(argc[1]);
+    double ro = atof(argc[1]);
     double NSIM = atoi(argc[2]);
-    double tmax = atoi(argc[3]);
-    double ro, dro = 0.01;
+    int tmax = atoi(argc[3]);
+    int L, Lmax = 100, dL = 20;
     int N, i;
     srand(time(NULL));
 
     char *gnuplot_commands[200] = {
         "set terminal png size 800,600 enhanced",
-        "set title 'Coefficiente di diffusione in funzione della densita'",
-        "set xlabel '{/Symbol r}'",
-        "set ylabel 'D({/Symbol r})'",
+        "set title 'Coefficiente di diffusione nel tempo, per diversi valori di L'",
+        "set xlabel 't'",
+        "set ylabel 'A(t)'",
         "set grid",
-        "set output 'D.png'",
-        "plot '-' notitle pt 7 ps 0.6",
+        "set logscale y",
+        "set output 'A_L.png'",
         "end"
     };
 
@@ -38,6 +38,12 @@ int main(int argv, char *argc[]){
         i++;
         c = gnuplot_commands[i];
     } while (strcmp(c,"end") != 0);
+    fprintf(gnu, "set label '{/Symbol r}=%.2lf' at screen 0.5, 0.8\n", ro);
+    fprintf(gnu, "plot ");
+    for (L = dL; L < Lmax; L += dL){
+        fprintf(gnu, "'-' title 'L=%d', ", L);
+    }
+    fprintf(gnu, "\n");
 
     /*
     matrix contains in the cell i, j the number n of the
@@ -49,17 +55,20 @@ int main(int argv, char *argc[]){
     */
     int **matrix = init_matrix(L);
     t_pos *pos, *abs_pos;
-    double diff;
-    for (ro = dro; ro < 1; ro += dro){
+    double *diff; // Array with diff coefficient for every t
+    for (L = dL; L < Lmax; L += dL){
         N = L*L*ro;
         pos = mycalloc(N, sizeof(t_pos));
         abs_pos = mycalloc(N, sizeof(t_pos));
-        diff = D(matrix, pos, abs_pos, L, N, ro, NSIM, tmax);
-        fprintf(gnu, "%lf %lf\n", ro, diff);
+        diff = A(matrix, pos, abs_pos, L, N, ro, NSIM, tmax);
+        for (i=0; i<tmax; i++){
+            fprintf(gnu, "%d %lf\n", i, diff[i]-diff[tmax-1]);
+        }
+        fprintf(gnu, "e\n");
+        free(diff);
         free(pos);
         free(abs_pos);
     }
-    fprintf(gnu, "e\n");
 
     pclose(gnu);
     for (i=0; i<L; i++){

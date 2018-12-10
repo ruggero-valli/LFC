@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
 
 #define Dim 2   // Number of dimensions
 
@@ -25,6 +26,7 @@ void update(int **matrix, t_pos *pos, t_pos *abs_pos, int L, int N);
 
 double R2(t_pos *abs_pos, int N);
 double D(int** matrix, t_pos *pos, t_pos *abs_pos, int L, int N, double ro, int NSIM, int tmax);
+double*A(int** matrix, t_pos *pos, t_pos *abs_pos, int L, int N, double ro, int NSIM, int tmax);
 
 
 void* mycalloc(int N, int size){
@@ -166,6 +168,8 @@ void update(int** matrix, t_pos *pos, t_pos *abs_pos, int L, int N){
 
 
 double R2(t_pos *abs_pos, int N){
+    // Calculate the average R^2 where R is the distance from the starting
+    // Point of every particle.
     int i;
     double res = 0;
     for (i=0; i<N; i++){
@@ -175,6 +179,8 @@ double R2(t_pos *abs_pos, int N){
 }
 
 double D(int** matrix, t_pos *pos, t_pos *abs_pos, int L, int N, double ro, int NSIM, int tmax){
+    // Calculate lim t->+inf of <R^2>/(2*Dim*t) where the mean is calcuated
+    // over many simulations.
     int i,j;
     double avg = 0;
     for (i=0; i<NSIM; i++){
@@ -186,4 +192,23 @@ double D(int** matrix, t_pos *pos, t_pos *abs_pos, int L, int N, double ro, int 
         avg += R2(abs_pos, N);
     }
     return avg/(NSIM*2*Dim*tmax);
+}
+
+double* A(int** matrix, t_pos *pos, t_pos *abs_pos, int L, int N, double ro, int NSIM, int tmax){
+    // Calculate <R^2>/(2*Dim*t) for every t, where the mean is calcuated
+    // over many simulations.
+    int i,j;
+    double *avg = mycalloc(tmax, sizeof(double));
+    for (i=0; i<NSIM; i++){
+        populate_matrix(matrix, ro, L, N);
+        populate_array(matrix, pos, abs_pos, L, N);
+        for(j=0; j<tmax; j++){
+            update(matrix, pos, abs_pos, L, N);
+            avg[j] += R2(abs_pos, N);
+        }
+    }
+    for (i=0; i<tmax; i++){
+        avg[i] = avg[i]/(NSIM*2*Dim*i);
+    }
+    return avg;
 }
