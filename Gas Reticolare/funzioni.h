@@ -3,6 +3,8 @@
 #include <math.h>
 #include <time.h>
 
+#define Dim 2   // Number of dimensions
+
 typedef struct t_pos {
     int x;
     int y;
@@ -17,11 +19,16 @@ double mod(double x, double m);
 void print_matrix(int **matrix, int L);
 void print_array(t_pos *array, int N);
 int** init_matrix(int L);
-int populate_matrix(int **matrix, int L, double ro);
-t_pos* init_array(int **matrix, int L, int N);
+void populate_matrix(int **matrix, double ro, int L, int N);
+void populate_array(int** matrix, t_pos* pos, t_pos* abs_pos, int L, int N);
 void update(int **matrix, t_pos *pos, t_pos *abs_pos, int L, int N);
 
+double R2(t_pos *abs_pos, int N);
+double D(int** matrix, t_pos *pos, t_pos *abs_pos, int L, int N, double ro, int NSIM, int tmax);
+
+
 void* mycalloc(int N, int size){
+    // Like calloc, but raises an error if fails to allocate
     void* ptr = calloc(N, size);
     if (ptr == NULL){
         fprintf(stderr, "Memory Error: allocation failed\n");
@@ -37,7 +44,7 @@ double randrange(double a, double b){
 int randbool(double p){
     // Generate a random number either 0 or 1
     // with probability p that it is 1
-    return rand()*INVRANDMAX > p;
+    return rand()*INVRANDMAX < p;
 }
 
 double mod(double x, double m){
@@ -46,6 +53,8 @@ double mod(double x, double m){
 }
 
 void print_matrix(int **matrix, int L){
+    // Print the matrix as a nice table on stdout
+    // For debug purposes
     int i, j;
     for (i=0; i<L; i++){
         for(j=0; j<L; j++){
@@ -56,6 +65,7 @@ void print_matrix(int **matrix, int L){
 }
 
 void print_array(t_pos *array, int N){
+    // Print nicely the array of positions for debug purposes
     int i;
     for (i=0; i<N; i++){
         if (i%10 == 0){
@@ -67,46 +77,52 @@ void print_array(t_pos *array, int N){
 }
 
 int** init_matrix(int L){
-    // Alloc a matrix of int and set it to -1
+    // Allocate a matrix of int
     int **matrix = mycalloc(L, sizeof(int *));
     int i, j;
     for (i=0; i<L; i++){
         matrix[i] = mycalloc(L, sizeof(int));
-        for (j=0; j<L; j++){
-            matrix[i][j] = -1;
-        }
     }
     return matrix;
 }
 
-int populate_matrix(int **matrix, int L, double ro){
-    // Populate the matrix with L*ro gas particles
-    int N = 0;
+void populate_matrix(int **matrix, double ro, int L, int N){
+    // Populate the matrix with L*L*ro gas particles
+    int n=0;
     int x, y;
-    if (ro < 0.5){ // method 1
-        while(N < L*L*ro){
+    int i,j;
+    // Set the matrix to -1
+    for (i=0; i<L; i++)
+        for (j=0; j<L; j++)
+            matrix[i][j] = -1;
+    // Method 1
+    if (ro < 0.5){
+        while(n < N){
             x = randrange(0, L);
             y = randrange(0, L);
             if (matrix[y][x] == -1){
-                matrix[y][x] = N++;
+                matrix[y][x] = n++;
             }
         }
-    } else { // method 2
-        int i,j;
-        for (i=0; i<L; i++){
-            for (j=0; j<L; j++){
-                if (randbool(ro)){
-                    matrix[i][j] = N++;
+    // Method 2
+    } else {
+        while(1){
+            for (i=0; i<L; i++){
+                for (j=0; j<L; j++){
+                    if (randbool(ro) && matrix[i][j] == -1){
+                        matrix[i][j] = n++;
+                    }
+                    if(n >= N){
+                        return;
+                    }
                 }
             }
         }
     }
-    return N;
 }
 
-t_pos* init_array(int** matrix, int L, int N){
-    // Create and sync the array of positions with the matrix
-    t_pos *pos = mycalloc(N, sizeof(t_pos));
+void populate_array(int** matrix, t_pos* pos, t_pos* abs_pos, int L, int N){
+    // Sync the array of positions with the matrix
     int i,j;
     int p;
     for (i=0; i<L; i++){
@@ -115,10 +131,11 @@ t_pos* init_array(int** matrix, int L, int N){
             if (p != -1){
                 pos[p].x = j;
                 pos[p].y = i;
+                abs_pos[p].x = 0;
+                abs_pos[p].y = 0;
             }
         }
     }
-    return pos;
 }
 
 void update(int** matrix, t_pos *pos, t_pos *abs_pos, int L, int N){
@@ -144,4 +161,29 @@ void update(int** matrix, t_pos *pos, t_pos *abs_pos, int L, int N){
             pos[i] = new_pos;
         }
     }
+}
+
+
+
+double R2(t_pos *abs_pos, int N){
+    int i;
+    double res = 0;
+    for (i=0; i<N; i++){
+        res += abs_pos[i].x*abs_pos[i].x + abs_pos[i].y*abs_pos[i].y;
+    }
+    return res/N;
+}
+
+double D(int** matrix, t_pos *pos, t_pos *abs_pos, int L, int N, double ro, int NSIM, int tmax){
+    int i,j;
+    double avg = 0;
+    for (i=0; i<NSIM; i++){
+        populate_matrix(matrix, ro, L, N);
+        populate_array(matrix, pos, abs_pos, L, N);
+        for(j=0; j<tmax; j++){
+            update(matrix, pos, abs_pos, L, N);
+        }
+        avg += R2(abs_pos, N);
+    }
+    return avg/(NSIM*2*Dim*tmax);
 }

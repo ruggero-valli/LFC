@@ -20,11 +20,13 @@ int main(int argv, char *argc[]){
     abs_pos contains at position n, the t_pos struct with the x and y
         distance travelled by the nth particle since the beginning.
     */
+    int N = L*L*ro;
     int **matrix = init_matrix(L);
-    int N = populate_matrix(matrix, L, ro);
-    t_pos *pos = init_array(matrix, L, N);
+    t_pos *pos = mycalloc(N, sizeof(t_pos));
     t_pos *abs_pos = mycalloc(N, sizeof(t_pos));
-    
+    populate_matrix(matrix, ro, L, N);
+    populate_array(matrix, pos, abs_pos, L, N);
+
     print_matrix(matrix, L);
     print_array(pos, N);
     print_array(abs_pos, N);
@@ -32,7 +34,6 @@ int main(int argv, char *argc[]){
     print_matrix(matrix, L);
     print_array(pos, N);
     print_array(abs_pos, N);
-
 
     for (i=0; i<L; i++){
         free(matrix[i]);
