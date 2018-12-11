@@ -15,7 +15,7 @@ Eseguire con:
     > gnuplot plot_autoevitante.gnu
 
 In caso di mancanza di tempo ridurre le costanti definite all'inizio, il grafico verrà
-meno preciso ma ci vorrà meno tempo per eseguire il codice:
+meno preciso e fino a un numero massimo di passi minore ma ci vorrà meno tempo per eseguire il codice:
 
     #define N_SIMULAZIONI 15000
     #define MAX_PASSI 300
