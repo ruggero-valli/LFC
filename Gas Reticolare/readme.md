@@ -1,5 +1,5 @@
 # LFC Gas Reticolare
-<h3> Riccardo Riglietti e Ruggero Valli <\h3>
+### Riccardo Riglietti e Ruggero Valli
 
 Questa cartella contiene i file relativi al gas reticolare.
 Non è presente uno script di gnuplot perché i programmi c scrivono direttamente i comandi per gnuplot attraverso una pipe.
