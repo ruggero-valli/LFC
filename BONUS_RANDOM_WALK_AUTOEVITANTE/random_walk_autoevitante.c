@@ -24,7 +24,7 @@ int main() {
 	// TEST
 	
 	// Test del generatore tra 0 e 1 sempre
-	assert( 0 <= r01() <= 1);
+	assert( 0 <= r01() && r01() <= 1);
 	
 	// Test che nel movimento casuale
 	// almeno una coordinata non cambia
