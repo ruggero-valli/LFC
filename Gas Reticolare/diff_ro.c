@@ -30,6 +30,7 @@ int main(int argv, char *argc[]){
 
     i=0;
     char *c;
+    // Write the commands to the pipe
     c = gnuplot_commands[i];
     do {
         fprintf(gnu, "%s\n", c);

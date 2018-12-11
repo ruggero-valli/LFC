@@ -21,8 +21,8 @@ int main(int argv, char *argc[]){
         "set title 'Coefficiente di diffusione nel tempo, per diversi valori di L'",
         "set xlabel 't'",
         "set ylabel 'A(t)'",
+        "set yrange [0.077:0.078]",
         "set grid",
-        "set logscale y",
         "set output 'A_L.png'",
         "end"
     };
@@ -62,7 +62,7 @@ int main(int argv, char *argc[]){
         abs_pos = mycalloc(N, sizeof(t_pos));
         diff = A(matrix, pos, abs_pos, L, N, ro, NSIM, tmax);
         for (i=0; i<tmax; i++){
-            fprintf(gnu, "%d %lf\n", i, diff[i]-diff[tmax-1]);
+            fprintf(gnu, "%d %lf\n", i, diff[i]);
         }
         fprintf(gnu, "e\n");
         free(diff);
