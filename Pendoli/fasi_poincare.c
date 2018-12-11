@@ -52,15 +52,13 @@ int main(){
 
 
     t_state state;
-    state.x = x0;
-    state.v = v0;
-    state.t = 0;
     double alpha;
+    state = simulate(x0, v0, dt, tmax, params, method); // Elimino la fase transiente
     while(state.t < tmax*100){ // Keep integrating 100 times more, to have decent poincare section
         state = integrate(state, dt, params);
         // wrap angle between -pi and pi
         alpha = mod(state.x+M_PI, 2*M_PI)-M_PI;
-        if (state.t < tmax){    // save phasespace only until tmax
+        if (state.t < 2*tmax){    // save phasespace only until 2*tmax
             fprintf(fasi, "%lf %lf\n", alpha, state.v);
         }
         if (fmod(state.t, TF)<dt){
