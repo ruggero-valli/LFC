@@ -14,7 +14,7 @@ Eseguire con:
     > gcc -pedantic -Wall random_walk_autoevitante.c -lm -O3 && ./a.out > "autoevitante_blocco.dat"
     > gnuplot plot_autoevitante.gnu
 
-In caso di mancanza di tempo ridurre le costanti definite all'inizio, il grafico erròà
+In caso di mancanza di tempo ridurre le costanti definite all'inizio, il grafico verrà
 meno preciso ma ci vorrà meno tempo per eseguire il codice:
 
     #define N_SIMULAZIONI 15000
