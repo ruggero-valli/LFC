@@ -1,4 +1,4 @@
-Ci chiediamo quanto a lungo possa camminare un punto che si muove casualmente
+Facciamo statistica su quanto a lungo possa camminare un punto che si muove casualmente
 sempre evitando i posti che ha già visitato prima di ritrovarsi "intrappolato" cioè "rinchiuso"
 all'interno di quadrati tutti già visitati da lui.
 
