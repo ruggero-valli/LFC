@@ -5,9 +5,9 @@ generati con randu si posizionano su pochi piani, quelli con minimal standard no
 Eseguire con
 
     > gcc -pedantic -Wall rand_generator.c -lm -O3 &&  ./a.out
-    > gnuplot '/home/riccardo/Desktop/Codici/LFC-master/rand_generators/gauss_hist.gnu' -persist
-    > gnuplot '/home/riccardo/Desktop/Codici/LFC-master/rand_generators/plot_minimal_standard.gnu' -persist
-    > gnuplot '/home/riccardo/Desktop/Codici/LFC-master/rand_generators/plot_randu.gnu' -persist
+    > gnuplot 'gauss_hist.gnu' -persist
+    > gnuplot 'plot_minimal_standard.gnu' -persist
+    > gnuplot 'plot_randu.gnu' -persist
 
 E' possibile ruotare i grafici tridimensionali. Questo è specialmente interessante nel caso di randu perchè si vedono piani con la rotazione giusta.
 
