@@ -1,5 +1,5 @@
-0.01 100     2      1       1  1     1.47 1
-dt   tmax    method phicode w2 gamma a0   wF
+0.01 93     3      1       1  0.5     1.47 0.6666666666666
+dt   tmax    method phicode w2 gamma   a0   wF
 
 method:
     0 - eulero
