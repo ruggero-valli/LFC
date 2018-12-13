@@ -17,27 +17,20 @@ int main(int argv, char *argc[]){
     srand(time(NULL));
 
     char *gnuplot_commands[200] = {
+        "f(x) = a*(1-x)**b + c*(1-x)**d",
+        "fit f(x) 'diff_lim.dat' via a,b,c,d",
         "set terminal png size 800,600 enhanced",
         "set title 'Coefficiente di diffusione in funzione della densita'",
         "set xlabel '{/Symbol r}'",
         "set ylabel 'D({/Symbol r})'",
         "set grid",
         "set output 'D.png'",
-        "plot '-' notitle pt 7 ps 0.6",
+        "plot 'diff_lim.dat' title 'data' pt 7 ps 0.6, f(x) title 'fit'",
         "end"
     };
 
     FILE *gnu = popen("gnuplot -persist", "w");
-
-    i=0;
-    char *c;
-    // Write the commands to the pipe
-    c = gnuplot_commands[i];
-    do {
-        fprintf(gnu, "%s\n", c);
-        i++;
-        c = gnuplot_commands[i];
-    } while (strcmp(c,"end") != 0);
+    FILE *out = fopen("diff_lim.dat", "w");
 
     /*
     matrix contains in the cell i, j the number n of the
@@ -55,11 +48,21 @@ int main(int argv, char *argc[]){
         pos = mycalloc(N, sizeof(t_pos));
         abs_pos = mycalloc(N, sizeof(t_pos));
         diff = D(matrix, pos, abs_pos, L, N, ro, NSIM, tmax);
-        fprintf(gnu, "%lf %lf\n", ro, diff);
+        fprintf(out, "%lf %lf\n", ro, diff);
         free(pos);
         free(abs_pos);
     }
-    fprintf(gnu, "e\n");
+    fclose(out);
+
+    i=0;
+    char *c;
+    // Write the commands to the pipe
+    c = gnuplot_commands[i];
+    do {
+        fprintf(gnu, "%s\n", c);
+        i++;
+        c = gnuplot_commands[i];
+    } while (strcmp(c,"end") != 0);
 
     pclose(gnu);
     for (i=0; i<L; i++){
